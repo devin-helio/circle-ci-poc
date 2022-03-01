@@ -8,7 +8,7 @@ orbs:
   kubernetes: circleci/kubernetes@0.11.1
 
 jobs:
-  circle-poc-cluster-setup:
+  cluster-setup:
     executor: aws-eks/python3
     parameters:
       cluster-name:
@@ -46,14 +46,14 @@ workflows:
     jobs:
       - aws-eks/create-cluster:
           cluster-name: circle-poc-cluster
-      - test-cluster:
+      - cluster-setup:
           cluster-name: circle-poc-cluster
           requires:
             - aws-eks/create-cluster
       - aws-eks/delete-cluster:
           cluster-name: circle-poc-cluster
           requires:
-            - circle-poc-cluster-setup
+            - cluster-setup
   maven_test:
     jobs:
       - maven/test:
