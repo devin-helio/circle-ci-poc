@@ -29,4 +29,5 @@ workflows:
     jobs:
       - maven/test:
           executor:
+            name: maven/default
             tag: 17
