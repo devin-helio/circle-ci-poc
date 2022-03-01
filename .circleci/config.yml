@@ -30,4 +30,4 @@ workflows:
       - maven/test:
           executor:
             name: maven/default
-            tag: 17
+            tag: "17"
