@@ -9,6 +9,17 @@ orbs:
   docker: circleci/docker@2.0.2
 
 jobs:
+  build-jar:
+    docker:
+      - image: 'cimg/python:3.10'
+    steps:
+      - maven/test:
+          command: 'test package'
+          executor:
+            name: maven/default
+            tag: "17.0.2"
+      - store_artifacts:
+          path: /tmp/demo-0.0.1-SNAPSHOT.jar
   cluster-setup:
     docker:
       - image: 'cimg/python:3.10'
@@ -28,6 +39,7 @@ jobs:
 workflows:
   build-docker-image:
     jobs:
+      - build-jar
       - docker/publish:
           image: $DOCKER_REGISTRY_USER/$DOCKER_REGISTRY_REPO
           update-description: true
@@ -45,9 +57,9 @@ workflows:
  #         cluster-name: circle-poc-cluster
  #         requires:
  #           - cluster-setup
-  maven_test:
-    jobs:
-      - maven/test:
-          executor:
-            name: maven/default
-            tag: "17.0.2"
+ # maven_test:
+ #   jobs:
+ #     - maven/test:
+ #         executor:
+ #           name: maven/default
+ #           tag: "17.0.2"
