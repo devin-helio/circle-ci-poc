@@ -6,6 +6,7 @@ orbs:
   maven: circleci/maven@1.3.0
   aws-eks: circleci/aws-eks@2.1.1
   kubernetes: circleci/kubernetes@1.3.0
+  docker: circleci/docker@2.0.2
 
 jobs:
   cluster-setup:
@@ -24,37 +25,26 @@ jobs:
           command: |
             kubectl get services
           name: circleci poc cluster
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-#jobs:
-#  say-hello:
-#    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-#    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-#    docker:
-#      - image: cimg/base:stable
-#    # Add steps to the job
-#    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-#    steps:
-#      - checkout
-#      - run:
-#          name: "Say hello"
-#          command: "echo Hello, World!"
-
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflowsS
 workflows:
-  deployment:
+  build-docker-image:
     jobs:
-      - aws-eks/create-cluster:
-          cluster-name: circle-poc-cluster
-      - cluster-setup:
-          cluster-name: circle-poc-cluster
-          requires:
-            - aws-eks/create-cluster
-      - aws-eks/delete-cluster:
-          cluster-name: circle-poc-cluster
-          requires:
-            - cluster-setup
+      - docker/publish:
+          image: $DOCKER_REGISTRY_USER/$DOCKER_REGISTRY_REPO
+          update-description: true
+          use-docker-credentials-store: true
+ # deployment:
+ #   jobs:
+ #     - aws-eks/create-cluster:
+ #         cluster-name: circle-poc-cluster
+ #     - cluster-setup:
+ #         cluster-name: circle-poc-cluster
+ #         requires:
+ #           - aws-eks/create-cluster
+ #     # TODO: remove this
+ #     - aws-eks/delete-cluster:
+ #         cluster-name: circle-poc-cluster
+ #         requires:
+ #           - cluster-setup
   maven_test:
     jobs:
       - maven/test:
