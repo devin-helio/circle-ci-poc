@@ -3,7 +3,6 @@
 version: 2.1
 
 orbs:
-  maven: circleci/maven@1.3.0
   aws-eks: circleci/aws-eks@2.1.1
   kubernetes: circleci/kubernetes@1.3.0
   docker: circleci/docker@2.0.2
@@ -16,7 +15,7 @@ jobs:
       - checkout
       - run: mvn test package
       - store_artifacts:
-          path: /tmp/demo-0.0.1-SNAPSHOT.jar
+          path: .
   cluster-setup:
     docker:
       - image: 'cimg/python:3.10'
@@ -41,6 +40,8 @@ workflows:
           image: $DOCKER_REGISTRY_USER/$DOCKER_REGISTRY_REPO
           update-description: true
           use-docker-credentials-store: true
+          requires:
+            - build-jar
  # deployment:
  #   jobs:
  #     - aws-eks/create-cluster:
