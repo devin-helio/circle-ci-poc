@@ -11,13 +11,10 @@ orbs:
 jobs:
   build-jar:
     docker:
-      - image: 'cimg/python:3.10'
+      - image: 'cimg/openjdk:17.0.2' 
     steps:
-      - maven/test:
-          command: 'test package'
-          executor:
-            name: maven/default
-            tag: "17.0.2"
+      - checkout
+      - run: mvn test package
       - store_artifacts:
           path: /tmp/demo-0.0.1-SNAPSHOT.jar
   cluster-setup:
